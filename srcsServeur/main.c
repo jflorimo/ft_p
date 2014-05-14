@@ -56,18 +56,32 @@ int        main(int argc, char *argv[])
     struct sockaddr_in    csin;
     int                    r;
     char                buff[1024];
+    pid_t               child_pid;
 
     if (argc != 2)
         usage(argv[0]);
     port = ft_atoi(argv[1]);
     sock = create_server(port);
-    cs = accept(sock, (struct sockaddr *)&csin, &cslen);
-    while ((r = read(cs, buff, 1023)) > 0)
-    {
-        buff[r - 1] = '\0';
-        printf("received %d bytes: [%s]\n", r, buff);
-    }
-    close(cs);
-    close(sock);
+    child_pid = fork();
+	while (42)
+	{
+		cs = accept(sock, (struct sockaddr *)&csin, &cslen);
+		if (child_pid > 0)
+		{
+			printf("father");
+		}
+		else
+		{
+			printf("child");
+		}
+		while ((r = read(cs, buff, 1023)) > 0)
+		{
+			buff[r - 1] = '\0';
+			printf("received %d bytes: [%s]\n", r, buff);
+		}
+		close(cs);
+		close(sock);
+
+	}
     return (0);
 }

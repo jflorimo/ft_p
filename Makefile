@@ -24,7 +24,7 @@ SFILES =	main.c
 
 SRCS = $(addprefix $(SRCDIRS), $(SFILES))
 SRCC = $(addprefix $(SRCDIRC), $(CFILES)) 
-GCC = gcc -Wall -Wextra -Werror
+GCC = cc -Wall -Wextra -Werror
 OBJS = $(SRCS:.c=.o)
 OBJC = $(SRCC:.c=.o)
 HDDIR = includes/
