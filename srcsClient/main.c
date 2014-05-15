@@ -21,7 +21,9 @@
 
 void    usage(char *str)
 {
-    printf("Usage: %s <port>\n", str);
+    ft_putstr("Usage: ");
+    ft_putstr(str);
+    ft_putstr(" <port>\n");
     exit(-1);
 }
 
@@ -40,7 +42,7 @@ int        create_client(char *addr, int port)
 	sin.sin_addr.s_addr = inet_addr(addr);
 	if (connect(sock, (const struct sockaddr *)&sin, sizeof(sin)) == -1)
 	{
-	    printf("Connect error\n");
+	    ft_putstr("Connect error\n");
 	    exit(-42);
 	}
 	return (sock);
@@ -59,13 +61,21 @@ int        main(int argc, char *argv[])
 	sock = create_client(argv[1], port);
 	char s[17];
 	recv(sock, &s, 17, 0);
-	ft_putstr(s);
+	// ft_putstr(s);
 	ft_putstr("JC% ");
 	while ((r = read(1, buff, 1023)) > 0)
 	{
 		buff[r - 1] = '\0';
 		write(1, "JC% ", 4);
 		write(sock, buff, r);
+		
+		// if (!ft_strcmp(buff, "ls"))
+		// {
+		// 	r = read(sock, buff, 1023);
+		// 	buff[r] = '\0';
+		// 	printf("%s",buff);
+		// 	write(1, "JC% ", 4);
+		// }
 	}
 	close(sock);
 	return (0);

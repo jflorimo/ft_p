@@ -47,6 +47,12 @@ int        create_server(int port)
     return (sock);
 }
 
+void		ls_command(int fd)
+{
+	ft_putstr_fd("\ncaca\n",fd);
+
+}
+
 int        main(int argc, char *argv[])
 {
     int                    port;
@@ -68,6 +74,7 @@ int        main(int argc, char *argv[])
 	while ((cs = accept(sock, (struct sockaddr *)&csin, &cslen)) > 0)
 	{
 		printf("##father ##count:%d\n",count);
+		count++;
 		if ((pid = fork()) == -1)
 		{
 			close(cs);
@@ -79,12 +86,17 @@ int        main(int argc, char *argv[])
 		}
 		else if (pid == 0)
 		{
-			count++;
+			
 			printf("id:%d\n",count);
 			while ((r = read(cs, buff, 1023)) > 0)
 			{
 				buff[r - 1] = '\0';
 				printf("id:%d received %d bytes: [%s]\n", count, r, buff);
+                if (!ft_strcmp(buff, "ls"))
+                {
+                	printf("ls received from %d\n", cs);
+					ls_command(cs);					
+				}
 			}		
 			close(cs);
 			printf("count:%d\n", count);
