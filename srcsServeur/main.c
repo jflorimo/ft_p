@@ -18,6 +18,9 @@
 #include <arpa/inet.h>
 #include <libft.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <dirent.h>
+
 
 void    usage(char *str)
 {
@@ -49,7 +52,16 @@ int        create_server(int port)
 
 void		ls_command(int fd)
 {
-	ft_putstr_fd("\ncaca\n",fd);
+    DIR *mydir;
+    struct dirent *myfile;
+    mydir = opendir(".");
+    while((myfile = readdir(mydir)) != NULL)
+    {  
+        ft_putendl_fd(myfile->d_name, fd);
+
+        ft_putendl(myfile->d_name);
+    }
+    closedir(mydir);
 
 }
 
@@ -82,7 +94,7 @@ int        main(int argc, char *argv[])
 		}
 		if (pid > 0)
 		{
-			send(cs, "Welcome to JC ~/\n", 17, 0);
+			send(cs, "Welcome to JC ~/\n", 18, 0);
 		}
 		else if (pid == 0)
 		{

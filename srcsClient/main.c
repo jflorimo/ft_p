@@ -54,28 +54,31 @@ int        main(int argc, char *argv[])
 	int		sock;
 	int		r;
 	char	buff[1024];
+	char	bufff[1024];
 
 	if (argc != 3)
 		usage(argv[0]);
 	port = ft_atoi(argv[2]);
 	sock = create_client(argv[1], port);
-	char s[17];
-	recv(sock, &s, 17, 0);
-	// ft_putstr(s);
+	char s[18];
+	recv(sock, &s, 18, 0);
+	ft_putstr(s);
 	ft_putstr("JC% ");
 	while ((r = read(1, buff, 1023)) > 0)
 	{
 		buff[r - 1] = '\0';
 		write(1, "JC% ", 4);
 		write(sock, buff, r);
-		
-		// if (!ft_strcmp(buff, "ls"))
-		// {
-		// 	r = read(sock, buff, 1023);
-		// 	buff[r] = '\0';
-		// 	printf("%s",buff);
-		// 	write(1, "JC% ", 4);
-		// }
+
+		if (!ft_strcmp(buff, "ls"))
+		{
+			while ((r = read(sock, bufff, 1023)) > 0)
+			{
+				bufff[r] = '\0';
+				ft_putstr(bufff);
+			}
+			ft_putstr("JC% ");
+		}
 	}
 	close(sock);
 	return (0);
