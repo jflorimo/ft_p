@@ -74,7 +74,6 @@ int						main(int argc, char *argv[])
 			}
 		}
 		ft_putstr("JC% ");
-		
 	}
 	close(sock);
 	return (0);
