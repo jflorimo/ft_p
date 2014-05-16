@@ -65,9 +65,8 @@ int						main(int argc, char *argv[])
 	port = ft_atoi(argv[1]);
 	sock = create_server(port);
 	count = 0;
-	while (42)
+	while ((cs = accept(sock, (struct sockaddr *)&csin, &cslen)) > 0)
 	{
-		cs = accept(sock, (struct sockaddr *)&csin, &cslen);
 		if ((pid = fork()) == -1)
 		{
 			close(cs);
@@ -88,7 +87,9 @@ int						main(int argc, char *argv[])
 			buff[r - 1] = '\0';
 			printf("received %d bytes: [%s] from client N%d\n", r, buff, count);
 			if (ft_strncmp("ls", buff, 2) == 0)
-			ft_ls(cs);
+				ft_ls(cs);
+			if (ft_strncmp("pwd", buff, 3) == 0)
+				get_pwd(cs);
 		}
 	}
 	return (0);

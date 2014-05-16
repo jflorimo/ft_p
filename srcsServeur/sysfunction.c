@@ -33,6 +33,16 @@ void				ft_ls(int cs)
 	closedir(dir);
 }
 
+void				get_pwd(int fd)
+{
+	char 			cwd[1024];
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	{
+		ft_putendl_fd(cwd, fd);
+		write(fd, "\0", 1);
+	}
+}
+
 void				empty(int fd)
 {
 	write(fd, "\0", 1);

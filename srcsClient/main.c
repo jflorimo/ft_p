@@ -65,7 +65,7 @@ int						main(int argc, char *argv[])
 	{
 		buff[r - 1] = '\0';
 		write(sock, buff, r);
-		if (ft_strncmp("ls", buff, 2) == 0)
+		if (!ft_strncmp("pwd", buff, 3) || !ft_strncmp("ls", buff, 2))
 		{
 			while ((r2 = read(sock, buff, 1)) > 0 && buff[0] != '\0')
 			{

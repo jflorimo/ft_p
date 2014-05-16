@@ -15,5 +15,6 @@
 
 void    ft_ls(int cs);
 void		empty(int fd);
+void				get_pwd(int fd);
 
 #endif
