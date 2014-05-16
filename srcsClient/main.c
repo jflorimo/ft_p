@@ -19,66 +19,61 @@
 #include <libft.h>
 #include <stdio.h>
 
-void    usage(char *str)
+void					usage(char *str)
 {
-    ft_putstr("Usage: ");
-    ft_putstr(str);
-    ft_putstr(" <port>\n");
-    exit(-1);
+	ft_putstr("Usage: ");
+	ft_putstr(str);
+	ft_putstr(" <port>\n");
+	exit(-1);
 }
 
-int        create_client(char *addr, int port)
+int						create_client(char *addr, int port)
 {
-	int		sock;
-	struct protoent	*proto;
+	int					sock;
+	struct protoent		*proto;
 	struct sockaddr_in	sin;
 
 	proto = getprotobyname("tcp");
 	if (proto == 0)
-	    return (-1);
+		return (-1);
 	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(port);
 	sin.sin_addr.s_addr = inet_addr(addr);
 	if (connect(sock, (const struct sockaddr *)&sin, sizeof(sin)) == -1)
 	{
-	    ft_putstr("Connect error\n");
-	    exit(-42);
+		ft_putstr("Connect error\n");
+		exit(-42);
 	}
 	return (sock);
 }
 
-int        main(int argc, char *argv[])
+int						main(int argc, char *argv[])
 {
-	int		port;
-	int		sock;
-	int		r;
-	char	buff[1024];
-	char	bufff[1024];
+	int					port;
+	int					sock;
+	int					r;
+	int					r2;
+	char				buff[1024];
 
 	if (argc != 3)
-		usage(argv[0]);
+	usage(argv[0]);
 	port = ft_atoi(argv[2]);
 	sock = create_client(argv[1], port);
-	char s[18];
-	recv(sock, &s, 18, 0);
-	ft_putstr(s);
 	ft_putstr("JC% ");
-	while ((r = read(1, buff, 1023)) > 0)
+	while ((r = read(0, buff, 1023)) > 0)
 	{
 		buff[r - 1] = '\0';
-		write(1, "JC% ", 4);
 		write(sock, buff, r);
-
-		if (!ft_strcmp(buff, "ls"))
+		if (ft_strncmp("ls", buff, 2) == 0)
 		{
-			while ((r = read(sock, bufff, 1023)) > 0)
+			while ((r2 = read(sock, buff, 1)) > 0 && buff[0] != '\0')
 			{
-				bufff[r] = '\0';
-				ft_putstr(bufff);
+				buff[r2] = '\0';
+				write(1, buff, r2);
 			}
-			ft_putstr("JC% ");
 		}
+		ft_putstr("JC% ");
 	}
 	close(sock);
 	return (0);

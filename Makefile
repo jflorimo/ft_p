@@ -20,7 +20,7 @@ SRCDIRC = srcsClient/
 
 CFILES =	main.c
 
-SFILES =	main.c
+SFILES =	main.c sysfunction.c
 
 SRCS = $(addprefix $(SRCDIRS), $(SFILES))
 SRCC = $(addprefix $(SRCDIRC), $(CFILES)) 
