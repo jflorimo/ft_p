@@ -33,13 +33,33 @@ void				ft_ls(int cs)
 	closedir(dir);
 }
 
-void				get_pwd(int fd)
+void				get_pwd(int fd, char *homedir)
 {
 	char 			cwd[1024];
+	char 			*str;
+
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
-		ft_putendl_fd(cwd, fd);
+		write(fd, "~/", 2);
+		str = ft_strdup(&cwd[ft_strlen(homedir) + 1]);
+		ft_putendl_fd(str, fd);
 		write(fd, "\0", 1);
+	}
+}
+
+void				set_cd(char *s, char *homedir)
+{
+	char 			saved_cwd[1024];
+	char 			cwd[1024];
+	if (getcwd(saved_cwd, sizeof(saved_cwd)) != NULL)
+		ft_putendl("error in cd");
+	chdir(s);
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+		ft_putendl("error in cd");
+	if (ft_strcmp(homedir, cwd) > 0)
+	{
+		ft_putendl("not authorized for query on!");
+		chdir(homedir);
 	}
 }
 

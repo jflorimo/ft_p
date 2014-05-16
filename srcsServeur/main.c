@@ -55,16 +55,23 @@ int						main(int argc, char *argv[])
 	int                    cs;
 	unsigned int        cslen;
 	struct sockaddr_in    csin;
-	int                    r;
+	int                 r;
 	char                buff[1024];
 	pid_t               pid;
 	int					count;
+	char				*homedir;
 
 	if (argc != 2)
 	    usage(argv[0]);
 	port = ft_atoi(argv[1]);
 	sock = create_server(port);
 	count = 0;
+	if (getcwd(buff, sizeof(buff)) != NULL)
+	{
+		homedir = ft_strdup(buff);
+	}
+	ft_putstr("HOME: ");
+	ft_putendl(homedir);
 	while ((cs = accept(sock, (struct sockaddr *)&csin, &cslen)) > 0)
 	{
 		if ((pid = fork()) == -1)
@@ -89,7 +96,9 @@ int						main(int argc, char *argv[])
 			if (ft_strncmp("ls", buff, 2) == 0)
 				ft_ls(cs);
 			if (ft_strncmp("pwd", buff, 3) == 0)
-				get_pwd(cs);
+				get_pwd(cs, homedir);
+			if (ft_strncmp("cd", buff, 2) == 0)
+				set_cd(&buff[3], homedir);
 		}
 	}
 	return (0);

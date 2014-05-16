@@ -13,8 +13,9 @@
 #ifndef SCRIPT_H
 # define SCRIPT_H
 
-void    ft_ls(int cs);
+void		ft_ls(int cs);
 void		empty(int fd);
-void				get_pwd(int fd);
+void		get_pwd(int fd, char *homedir);
+void		set_cd(char *s, char *homedir);
 
 #endif
