@@ -59,7 +59,7 @@ void				set_cd(char *s, char *homedir)
 	if (ft_strcmp(homedir, cwd) > 0)
 	{
 		ft_putendl("not authorized for query on!");
-		chdir(homedir);
+		chdir(saved_cwd);
 	}
 }
 
