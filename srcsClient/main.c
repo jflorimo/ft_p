@@ -73,8 +73,7 @@ int						main(int argc, char *argv[])
 				write(1, buff, r2);
 			}
 		}
-		ft_putstr("JC% "); 
-		
+		ft_putstr("JC% ");
 	}
 	close(sock);
 	return (0);
