@@ -27,4 +27,13 @@ typedef struct			s_data
 	char				*homedir;
 }						t_data;
 
+typedef struct			s_datass
+{
+	int					port;
+	int					sock;
+	int					r;
+	int					r2;
+	char				buff[1024];
+}						t_datass;
+
 #endif

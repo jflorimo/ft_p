@@ -49,6 +49,18 @@ int						create_server(int port)
 	return (sock);
 }
 
+void					process(t_data d)
+{
+	d.buff[d.r - 1] = '\0';
+	printf("received %d bytes: [%s] from client N%d\n", d.r, d.buff, d.count);
+	if (ft_strncmp("ls", d.buff, 2) == 0)
+		ft_ls(d.cs);
+	if (ft_strncmp("pwd", d.buff, 3) == 0)
+		get_pwd(d.cs, ft_strlen(d.homedir));
+	if (ft_strncmp("cd", d.buff, 2) == 0)
+		set_cd(&(d.buff[3]), d.homedir);
+}
+
 int						main(int argc, char *argv[])
 {
 	t_data				d;
@@ -56,21 +68,14 @@ int						main(int argc, char *argv[])
 	if (argc != 2)
 		usage(argv[0]);
 	d.port = ft_atoi(argv[1]);
-	d.sock = create_server(port);
+	d.sock = create_server(d.port);
 	d.count = 0;
-	if (getcwd(d.buff, sizeof(d.buff)) != NULL)
-	{
-		d.homedir = ft_strdup(d.buff);
-	}
-	ft_putstr("HOME: ");
-	ft_putendl(d.homedir);
-	while ((d.cs = accept(d.sock, (struct sockaddr *)&(d.csin), &(d.cslen))) > 0)
+	d.homedir = get_homedir();
+	while ((d.cs = accept(d.sock,
+		(struct sockaddr *)&(d.csin), &(d.cslen))) > 0)
 	{
 		if ((d.pid = fork()) == -1)
-		{
 			close(d.cs);
-			continue ;
-		}
 		else if (d.pid > 0)
 		{
 			close(d.cs);
@@ -78,20 +83,9 @@ int						main(int argc, char *argv[])
 			continue ;
 		}
 		else if (d.pid == 0)
-		{
 			d.count++;
-		}
 		while ((d.r = read(d.cs, d.buff, 1023)) > 0)
-		{
-			d.buff[d.r - 1] = '\0';
-			printf("received %d bytes: [%s] from client N%d\n", d.r, d.buff, d.count);
-			if (ft_strncmp("ls", d.buff, 2) == 0)
-				ft_ls(d.cs);
-			if (ft_strncmp("pwd", d.buff, 3) == 0)
-				get_pwd(d.cs, ft_strlen(d.homedir));
-			if (ft_strncmp("cd", d.buff, 2) == 0)
-				set_cd(&(d.buff[3]), d.homedir);
-		}
+			process(d);
 	}
 	return (0);
 }

@@ -18,6 +18,7 @@
 #include <arpa/inet.h>
 #include <libft.h>
 #include <stdio.h>
+#include "struct.h"
 
 void					usage(char *str)
 {
@@ -48,43 +49,43 @@ int						create_client(char *addr, int port)
 	return (sock);
 }
 
+void					process(t_datass d)
+{
+	d.buff[d.r - 1] = '\0';
+	write(d.sock, d.buff, d.r);
+	if (!ft_strncmp("pwd", d.buff, 3) || !ft_strncmp("ls", d.buff, 2))
+	{
+		while ((d.r2 = read(d.sock, d.buff, 1)) > 0 && d.buff[0] != '\0')
+		{
+			d.buff[d.r2] = '\0';
+			write(1, d.buff, d.r2);
+		}
+	}
+	if (!ft_strncmp("put", d.buff, 3))
+	{
+	}
+	if (!ft_strncmp("quit", d.buff, 4))
+	{
+		close(d.sock);
+		printf("leaving server ...\n");
+		exit(1);
+	}
+	ft_putstr("JC% ");
+}
+
 int						main(int argc, char *argv[])
 {
-	int					port;
-	int					sock;
-	int					r;
-	int					r2;
-	char				buff[1024];
+	t_datass			d;
 
 	if (argc != 3)
-	usage(argv[0]);
-	port = ft_atoi(argv[2]);
-	sock = create_client(argv[1], port);
+		usage(argv[0]);
+	d.port = ft_atoi(argv[2]);
+	d.sock = create_client(argv[1], d.port);
 	ft_putstr("JC% ");
-	while ((r = read(0, buff, 1023)) > 0)
+	while ((d.r = read(0, d.buff, 1023)) > 0)
 	{
-		buff[r - 1] = '\0';
-		write(sock, buff, r);
-		if (!ft_strncmp("pwd", buff, 3) || !ft_strncmp("ls", buff, 2))
-		{
-			while ((r2 = read(sock, buff, 1)) > 0 && buff[0] != '\0')
-			{
-				buff[r2] = '\0';
-				write(1, buff, r2);
-			}
-		}
-		if (!ft_strncmp("put", buff, 3))
-		{
-			
-		}
-		if (!ft_strncmp("quit", buff, 4))
-		{
-			close(sock);
-			printf("leaving server ...\n");
-			exit(1);
-		}
-		ft_putstr("JC% ");
+		process(d);
 	}
-	close(sock);
+	close(d.sock);
 	return (0);
 }

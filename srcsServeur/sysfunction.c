@@ -57,15 +57,29 @@ void				set_cd(char *s, char *homedir)
 	char			cwd[1024];
 
 	if (getcwd(saved_cwd, sizeof(saved_cwd)) != NULL)
-		ft_putendl("error in cd");
+		ft_putendl("not authorized for query on! cd");
 	chdir(s);
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		ft_putendl("error in cd");
+		ft_putendl("not authorized for query on! cd");
 	if (ft_strcmp(homedir, cwd) > 0)
 	{
-		ft_putendl("not authorized for query on!");
+		ft_putendl("not authorized for query on! cd");
 		chdir(saved_cwd);
 	}
+}
+
+char				*get_homedir(void)
+{
+	char			buff[1024];
+	char			*homedir;
+
+	if (getcwd(buff, sizeof(buff)) != NULL)
+	{
+		homedir = ft_strdup(buff);
+	}
+	ft_putstr("HOME: ");
+	ft_putendl(homedir);
+	return (homedir);
 }
 
 void				empty(int fd)
