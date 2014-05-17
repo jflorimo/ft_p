@@ -18,7 +18,9 @@
 #include <arpa/inet.h>
 #include <libft.h>
 #include <stdio.h>
+#include "script.h"
 #include "struct.h"
+#include <fcntl.h>
 
 void					usage(char *str)
 {
@@ -49,6 +51,26 @@ int						create_client(char *addr, int port)
 	return (sock);
 }
 
+void					put_file(char *file, int sock)
+{
+	int	fd;
+	int r;
+	char recvBuff[256];
+
+	if ((fd = open(file, O_RDONLY)) != -1)
+	{
+		printf("open SUCCEED\n");
+		while((r = read(fd, recvBuff, 256)) > 0)
+		{
+			recvBuff[r] = '\0';
+			write(sock, recvBuff, sizeof(recvBuff));
+		}
+		close(fd);
+	}
+	else
+		printf("\x1b[31mFAILED\x1b[0m : couldn't open file\n");
+}
+
 void					process(t_datass d)
 {
 	d.buff[d.r - 1] = '\0';
@@ -62,8 +84,7 @@ void					process(t_datass d)
 		}
 	}
 	if (!ft_strncmp("put", d.buff, 3))
-	{
-	}
+		put_file(&(d.buff[4]), d.sock);
 	if (!ft_strncmp("quit", d.buff, 4))
 	{
 		close(d.sock);

@@ -18,5 +18,6 @@ void		empty(int fd);
 void		get_pwd(int fd, int len);
 void		set_cd(char *s, char *homedir);
 char		*get_homedir();
+void		get_file(char *file, int fd);
 
 #endif
