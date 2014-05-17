@@ -73,6 +73,16 @@ int						main(int argc, char *argv[])
 				write(1, buff, r2);
 			}
 		}
+		if (!ft_strncmp("put", buff, 3))
+		{
+			
+		}
+		if (!ft_strncmp("quit", buff, 4))
+		{
+			close(sock);
+			printf("leaving server ...\n");
+			exit(1);
+		}
 		ft_putstr("JC% ");
 	}
 	close(sock);

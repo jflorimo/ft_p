@@ -33,24 +33,29 @@ void				ft_ls(int cs)
 	closedir(dir);
 }
 
-void				get_pwd(int fd, char *homedir)
+void				get_pwd(int fd, int len)
 {
-	char 			cwd[1024];
-	char 			*str;
+	char			cwd[1024];
+	char			*str;
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
 		write(fd, "~/", 2);
-		str = ft_strdup(&cwd[ft_strlen(homedir) + 1]);
+		if (ft_strlen(&cwd[len]) <= 0)
+			str = ft_strdup(&cwd[len]);
+		else
+			str = ft_strdup(&cwd[len + 1]);
 		ft_putendl_fd(str, fd);
+		ft_putendl(str);
 		write(fd, "\0", 1);
 	}
 }
 
 void				set_cd(char *s, char *homedir)
 {
-	char 			saved_cwd[1024];
-	char 			cwd[1024];
+	char			saved_cwd[1024];
+	char			cwd[1024];
+
 	if (getcwd(saved_cwd, sizeof(saved_cwd)) != NULL)
 		ft_putendl("error in cd");
 	chdir(s);

@@ -1,21 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   script.h                                           :+:      :+:    :+:   */
+/*   struct.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jflorimo <jflorimo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2014/04/22 17:38:11 by jflorimo          #+#    #+#             */
-/*   Updated: 2014/04/22 17:38:13 by jflorimo         ###   ########.fr       */
+/*   Created: 2014/05/17 14:21:23 by jflorimo          #+#    #+#             */
+/*   Updated: 2014/05/17 14:21:24 by jflorimo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SCRIPT_H
-# define SCRIPT_H
+#ifndef STRUCT_H
+# define STRUCT_H
 
-void		ft_ls(int cs);
-void		empty(int fd);
-void		get_pwd(int fd, int len);
-void		set_cd(char *s, char *homedir);
+typedef struct			s_data
+{
+	int					port;
+	int					sock;
+	int					cs;
+	unsigned int		cslen;
+	struct sockaddr_in	csin;
+	int					r;
+	char				buff[1024];
+	pid_t				pid;
+	int					count;
+	char				*homedir;
+}						t_data;
 
 #endif

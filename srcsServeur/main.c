@@ -19,6 +19,7 @@
 #include <libft.h>
 #include <stdio.h>
 #include "script.h"
+#include "struct.h"
 
 void					usage(char *str)
 {
@@ -50,55 +51,46 @@ int						create_server(int port)
 
 int						main(int argc, char *argv[])
 {
-	int                    port;
-	int                    sock;
-	int                    cs;
-	unsigned int        cslen;
-	struct sockaddr_in    csin;
-	int                 r;
-	char                buff[1024];
-	pid_t               pid;
-	int					count;
-	char				*homedir;
+	t_data				d;
 
 	if (argc != 2)
-	    usage(argv[0]);
-	port = ft_atoi(argv[1]);
-	sock = create_server(port);
-	count = 0;
-	if (getcwd(buff, sizeof(buff)) != NULL)
+		usage(argv[0]);
+	d.port = ft_atoi(argv[1]);
+	d.sock = create_server(port);
+	d.count = 0;
+	if (getcwd(d.buff, sizeof(d.buff)) != NULL)
 	{
-		homedir = ft_strdup(buff);
+		d.homedir = ft_strdup(d.buff);
 	}
 	ft_putstr("HOME: ");
-	ft_putendl(homedir);
-	while ((cs = accept(sock, (struct sockaddr *)&csin, &cslen)) > 0)
+	ft_putendl(d.homedir);
+	while ((d.cs = accept(d.sock, (struct sockaddr *)&(d.csin), &(d.cslen))) > 0)
 	{
-		if ((pid = fork()) == -1)
+		if ((d.pid = fork()) == -1)
 		{
-			close(cs);
+			close(d.cs);
 			continue ;
 		}
-		else if (pid > 0)
+		else if (d.pid > 0)
 		{
-			close(cs);
-			count++;
+			close(d.cs);
+			d.count++;
 			continue ;
 		}
-		else if (pid == 0)
+		else if (d.pid == 0)
 		{
-			count++;
+			d.count++;
 		}
-		while ((r = read(cs, buff, 1023)) > 0)
+		while ((d.r = read(d.cs, d.buff, 1023)) > 0)
 		{
-			buff[r - 1] = '\0';
-			printf("received %d bytes: [%s] from client N%d\n", r, buff, count);
-			if (ft_strncmp("ls", buff, 2) == 0)
-				ft_ls(cs);
-			if (ft_strncmp("pwd", buff, 3) == 0)
-				get_pwd(cs, homedir);
-			if (ft_strncmp("cd", buff, 2) == 0)
-				set_cd(&buff[3], homedir);
+			d.buff[d.r - 1] = '\0';
+			printf("received %d bytes: [%s] from client N%d\n", d.r, d.buff, d.count);
+			if (ft_strncmp("ls", d.buff, 2) == 0)
+				ft_ls(d.cs);
+			if (ft_strncmp("pwd", d.buff, 3) == 0)
+				get_pwd(d.cs, ft_strlen(d.homedir));
+			if (ft_strncmp("cd", d.buff, 2) == 0)
+				set_cd(&(d.buff[3]), d.homedir);
 		}
 	}
 	return (0);
