@@ -18,13 +18,13 @@ SRCDIRS = srcsServeur/
 
 SRCDIRC = srcsClient/
 
-CFILES =	main.c
+CFILES =	main.c get_set_file.c
 
 SFILES =	main.c sysfunction.c get_set_file.c
 
 SRCS = $(addprefix $(SRCDIRS), $(SFILES))
 SRCC = $(addprefix $(SRCDIRC), $(CFILES)) 
-GCC = cc -Wall -Wextra -Werror
+GCC = gcc -Wall -Wextra -Werror
 OBJS = $(SRCS:.c=.o)
 OBJC = $(SRCC:.c=.o)
 HDDIR = includes/

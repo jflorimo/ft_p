@@ -21,6 +21,7 @@
 #include "script.h"
 #include "struct.h"
 #include <fcntl.h>
+#include "client.h"
 
 void					usage(char *str)
 {
@@ -51,40 +52,34 @@ int						create_client(char *addr, int port)
 	return (sock);
 }
 
-void					put_file(char *file, int sock)
+void					get_result(t_datass d)
 {
-	int	fd;
-	int r;
-	char recvBuff[256];
-
-	if ((fd = open(file, O_RDONLY)) != -1)
+	while ((d.r2 = read(d.sock, d.buff, 1)) > 0 && d.buff[0] != '\0')
 	{
-		printf("open SUCCEED\n");
-		while((r = read(fd, recvBuff, 256)) > 0)
-		{
-			recvBuff[r] = '\0';
-			write(sock, recvBuff, sizeof(recvBuff));
-		}
-		close(fd);
+		d.buff[d.r2] = '\0';
+		write(1, d.buff, d.r2);
 	}
-	else
-		printf("\x1b[31mFAILED\x1b[0m : couldn't open file\n");
 }
 
 void					process(t_datass d)
 {
 	d.buff[d.r - 1] = '\0';
 	write(d.sock, d.buff, d.r);
-	if (!ft_strncmp("pwd", d.buff, 3) || !ft_strncmp("ls", d.buff, 2))
+	if (!ft_strncmp("pwd", d.buff, 3) || !ft_strncmp("ls", d.buff, 2) ||
+		!ft_strncmp("cd", d.buff, 2))
 	{
-		while ((d.r2 = read(d.sock, d.buff, 1)) > 0 && d.buff[0] != '\0')
-		{
-			d.buff[d.r2] = '\0';
-			write(1, d.buff, d.r2);
-		}
+		get_result(d);
 	}
 	if (!ft_strncmp("put", d.buff, 3))
-		put_file(&(d.buff[4]), d.sock);
+	{
+		if (put_file(&(d.buff[4]), d.sock))
+			get_result(d);
+	}
+	if (!ft_strncmp("get", d.buff, 3))
+	{
+		if (get_file(&(d.buff[4]), d.sock))
+			get_result(d);
+	}
 	if (!ft_strncmp("quit", d.buff, 4))
 	{
 		close(d.sock);

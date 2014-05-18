@@ -49,21 +49,23 @@ int						create_server(int port)
 	return (sock);
 }
 
-
 void					process(t_data d)
 {
 	d.buff[d.r - 1] = '\0';
 	if (ft_strncmp("put", d.buff, 3) == 0)
-		get_file(&d.buff[4], d.cs);
+		get_file_serv(&d.buff[4], d.cs);
+	if (ft_strncmp("get", d.buff, 3) == 0)
+		put_file_serv(&(d.buff[4]), d.cs);
 	else
 	{
-		printf("received %d bytes: [%s] from client N%d\n", d.r, d.buff, d.count);
+		printf("received %d bytes: [%s] from client N%d\n",
+			d.r, d.buff, d.count);
 		if (ft_strncmp("ls", d.buff, 2) == 0)
 			ft_ls(d.cs);
-		if (ft_strncmp("pwd", d.buff, 3) == 0)
+		else if (ft_strncmp("pwd", d.buff, 3) == 0)
 			get_pwd(d.cs, ft_strlen(d.homedir));
-		if (ft_strncmp("cd", d.buff, 2) == 0)
-			set_cd(&(d.buff[3]), d.homedir);
+		else if (ft_strncmp("cd", d.buff, 2) == 0)
+			set_cd(&(d.buff[3]), d.homedir, d.cs);
 	}
 }
 

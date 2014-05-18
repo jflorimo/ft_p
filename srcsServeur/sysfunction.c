@@ -16,19 +16,31 @@
 #include <libft.h>
 #include "script.h"
 
+void				empty(int fd)
+{
+	write(fd, "\0", 1);
+}
+
 void				ft_ls(int cs)
 {
 	DIR				*dir;
 	struct dirent	*p;
 	char			*fic;
+	int				i;
 
 	dir = opendir(".");
+	i = 0;
 	while ((p = readdir(dir)))
 	{
 		fic = p->d_name;
 		if (ft_strncmp(".", fic, 1) != 0)
 			ft_putendl_fd(fic, cs);
+		i++;
 	}
+	if (i > 0)
+		ft_putstr_fd("\x1b[32mSUCCESS\x1b[0m\n", cs);
+	else
+		ft_putstr_fd("\x1b[31mERROR\x1b[0m\n", cs);
 	write(cs, "\0", 1);
 	closedir(dir);
 }
@@ -40,31 +52,41 @@ void				get_pwd(int fd, int len)
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
+		ft_putstr_fd("\x1b[32mSUCCESS\x1b[0m\n", fd);
 		write(fd, "~/", 2);
 		if (ft_strlen(&cwd[len]) <= 0)
 			str = ft_strdup(&cwd[len]);
 		else
 			str = ft_strdup(&cwd[len + 1]);
 		ft_putendl_fd(str, fd);
-		ft_putendl(str);
 		write(fd, "\0", 1);
 	}
+	else
+		ft_putstr_fd("\x1b[31mERROR\x1b[0m\n", fd);
 }
 
-void				set_cd(char *s, char *homedir)
+void				set_cd(char *s, char *homedir, int fd)
 {
 	char			saved_cwd[1024];
 	char			cwd[1024];
 
 	if (getcwd(saved_cwd, sizeof(saved_cwd)) != NULL)
-		ft_putendl("not authorized for query on! cd");
-	chdir(s);
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		ft_putendl("not authorized for query on! cd");
-	if (ft_strcmp(homedir, cwd) > 0)
 	{
-		ft_putendl("not authorized for query on! cd");
-		chdir(saved_cwd);
+		chdir(s);
+		if (getcwd(cwd, sizeof(cwd)) != NULL)
+		{
+			if (ft_strcmp(homedir, cwd) > 0)
+			{
+				chdir(saved_cwd);
+				ft_putstr_fd("\x1b[31mERROR\x1b[0m: not authorized\n", fd);
+				write(fd, "\0", 1);
+			}
+			else
+			{
+				ft_putstr_fd("\x1b[32mSUCCESS\x1b[0m\n", fd);
+				write(fd, "\0", 1);
+			}
+		}
 	}
 }
 
@@ -80,9 +102,4 @@ char				*get_homedir(void)
 	ft_putstr("HOME: ");
 	ft_putendl(homedir);
 	return (homedir);
-}
-
-void				empty(int fd)
-{
-	write(fd, "\0", 1);
 }

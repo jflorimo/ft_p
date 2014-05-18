@@ -19,7 +19,36 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-char			*gen(char *path)
+int				put_file(char *file, int sock)
+{
+	int			fd;
+	int			ret;
+	struct stat	st[1024];
+	int			size;
+	char		buff[100000];
+
+	if ((fd = open(file, O_RDONLY)) != -1)
+	{
+		if ((ret = fstat(fd, st)) == -1)
+			ft_putstr("ERROR STAT\n");
+		size = (int)st->st_size;
+		write(sock, ft_itoa(size), ft_strlen(ft_itoa(size)));
+		write(sock, "\0", 1);
+		while ((ret = read(fd, buff, (size_t)size)) > 0)
+		{
+			buff[ret] = '\0';
+			write(sock, buff, ret);
+		}
+	}
+	else
+	{
+		write(sock, "ERROR", 5);
+		write(sock, "\0", 1);
+	}
+	return (1);
+}
+
+char			*getname(char *path)
 {
 	char		*ssc;
 	int			l;
@@ -35,70 +64,31 @@ char			*gen(char *path)
 	return (path);
 }
 
-void			displayerr(char *s, int fdf)
-{
-	ft_putstr_fd(s, fdf);
-	write(fdf, "\0", 1);
-}
-
-void			writefile(int fd, int fdf, int size)
-{
-	char		buffer[100000];
-	int			r2;
-
-	while ((r2 = read(fdf, buffer, size)) > 0)
-	{
-		buffer[r2] = '\0';
-		write(fd, buffer, size);
-		break ;
-	}
-}
-
-void			get_file_serv(char *file, int fdf)
+int				get_file(char *file, int sock)
 {
 	char		size[8];
 	char		buff[1];
+	char		buffer[100000];
 	int			r;
+	int			r2;
 	int			fd;
 
 	fd = 0;
 	ft_bzero(size, 8);
-	while ((r = read(fdf, buff, 1) > 0) && buff[0] != '\0')
+	while ((r = read(sock, buff, 1) > 0) && buff[0] != '\0')
 		size[fd++] = buff[0];
-	if (ft_strncmp("ERROR", size, 5))
+	if (!ft_strncmp("ERROR", size, 5))
 	{
-		if ((fd = open(gen(file), O_CREAT | O_WRONLY | O_APPEND, 0666)) == -1)
-			ft_putendl("ERROR CREATING FILE\n");
-		writefile(fd, fdf, ft_atoi(size));
-		displayerr("SERVER: SUCCESS RECEIVE FILE\n", fdf);
+		ft_putendl("SERVER: ERROR FILE NOT FOUND");
+		return (0);
 	}
-	else
-		displayerr("SERVER: ERROR FILE NOT FOUND\n", fdf);
-}
-
-void			put_file_serv(char *file, int cs)
-{
-	int			fd;
-	int			ret;
-	struct stat	st[1024];
-	int			size;
-	char		buff[100000];
-
-	if ((fd = open(file, O_RDONLY)) != -1)
+	if ((fd = open(getname(file), O_CREAT | O_WRONLY | O_APPEND, 0666)) == -1)
+		ft_putendl("ERROR CREATING FILE\n");
+	while ((r2 = read(sock, buffer, ft_atoi(size))) > 0)
 	{
-		if ((ret = fstat(fd, st)) == -1)
-			ft_putstr("ERROR STAT\n");
-		size = (int)st->st_size;
-		write(cs, ft_itoa(size), ft_strlen(ft_itoa(size)));
-		write(cs, "\0", 1);
-		while ((ret = read(fd, buff, (size_t)size)) > 0)
-		{
-			buff[ret] = '\0';
-			write(cs, buff, ret);
-		}
-		ft_putstr_fd("SERVER: SUCCESS FILE SEND\n", cs);
+		buffer[r2] = '\0';
+		write(fd, buffer, ft_atoi(size));
+		break ;
 	}
-	else
-		ft_putstr_fd("ERROR", cs);
-	write(cs, "\0", 1);
+	return (1);
 }
